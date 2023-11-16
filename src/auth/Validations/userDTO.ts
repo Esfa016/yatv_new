@@ -1,16 +1,26 @@
-import { IsNotEmpty, IsString, IsStrongPassword } from "class-validator";
+import { IsEnum, IsNotEmpty, IsPhoneNumber, IsString, IsStrongPassword } from "class-validator";
+import { AllowedUserRoles, UserRoles } from "../Types/roles";
 
-class CreateUserDto{
-    @IsString()
-    @IsNotEmpty()
-    fullName: string
+export class CreateUserDto {
+  @IsString()
+  @IsNotEmpty()
+  firstName: string;
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+  @IsString()
+  @IsPhoneNumber()
+  phoneNumber: string;
+  @IsEnum(AllowedUserRoles)
+  @IsNotEmpty()
+  role: string;
+}
+
+export class LoginUserDto{
     @IsString()
     @IsNotEmpty()
     username: string
     @IsString()
     @IsNotEmpty()
-    @IsStrongPassword()
     userPin:string
-    
-
 }
