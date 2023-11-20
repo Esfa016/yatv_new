@@ -7,7 +7,7 @@ async function bootstrap() {
    app.useGlobalPipes(new ValidationPipe());
    app.enableCors();
    app.use(helmet());
-   app.setGlobalPrefix('/api');
+  app.setGlobalPrefix('/api');
   await app.listen(process.env.PORT);
 }
 bootstrap();

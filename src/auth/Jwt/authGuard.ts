@@ -9,7 +9,7 @@ import { ForbiddenException } from '@nestjs/common/exceptions';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { ErrorMessage } from 'src/Global/messages';
-import { AccountStatus } from '../Types/accountStatus';
+import { AccountStatus, UserAccount } from '../Types/accountStatus';
 class Exporter {
   static extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
@@ -25,7 +25,7 @@ export class UserAuthGuard implements CanActivate {
     const token = Exporter.extractTokenFromHeader(request);
     if (!token) throw new UnauthorizedException(ErrorMessage.unauthorized);
     try {
-      const payload = await this.jwtService.verify(token, {
+      const payload:UserAccount = await this.jwtService.verify(token, {
         secret: process.env.JWT_USER,
       });
       request.user = payload;

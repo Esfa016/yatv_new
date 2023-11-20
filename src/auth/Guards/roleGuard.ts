@@ -7,7 +7,9 @@ export class RbacGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
     const userRoles = request.user.role;
-
-    return this.requiredRoles.some((role) => userRoles.includes(role));
+    return this.requiredRoles.includes(userRoles)
+  //   console.log(this.requiredRoles)
+  //  return  this.requiredRoles.some((role) => userRoles.includes(role));
+    
   }
 }

@@ -7,6 +7,7 @@ import { DepartmentsModule } from './departments/departments.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     ReportsModule,
     IssuesModule,
     DepartmentsModule,
+    ProductsModule,
   ],
   controllers: [],
   providers: [],

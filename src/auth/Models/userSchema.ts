@@ -20,7 +20,7 @@ export class Users{
     @Prop({ type: String, enum: AccountStatus , default:AccountStatus.ACTIVE })
     status: AccountStatus
     @Prop({ type: String, enum: UserRoles })
-    role:UserRoles
+    role:String
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users)
