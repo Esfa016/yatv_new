@@ -26,7 +26,7 @@ export class Users{
 export const UsersSchema = SchemaFactory.createForClass(Users)
 
 UsersSchema.pre('save', async function (next) {
-    this.username = this.firstName.toString()+this.lastName.toString()+'@yatv.com'
+    this.username = this.firstName.toString().toLowerCase()+this.lastName.toString().toLowerCase()+'@yatv.com'
     const hashed = await bcrypt.hash(this.userPin, 8)
     this.userPin = hashed
     next()

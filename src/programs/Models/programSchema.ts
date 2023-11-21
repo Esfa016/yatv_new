@@ -26,19 +26,29 @@ export class Programs {
     ref: Users.name,
   })
   approvedBy: mongoose.Schema.Types.ObjectId;
-  @Prop({ type: [{type:mongoose.Schema.Types.ObjectId, ref:Users.name}] })
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: Users.name }] })
   assignedCameraMen: mongoose.Schema.Types.ObjectId[];
   @Prop()
   type: String;
   @Prop()
   description: String;
-  @Prop({type:[{type:mongoose.Schema.Types.ObjectId,ref:Product.name}]})
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: Product.name }] })
   equipments: mongoose.Schema.Types.ObjectId[];
   @Prop({ type: String, enum: requestStatus, default: requestStatus.PENDING })
   status: String;
   @Prop({ required: false })
   challengesFaced: string;
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Users.name })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Users.name,
+    required: false,
+  })
   producerDetails: mongoose.Schema.Types.ObjectId;
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Users.name,
+    required: false,
+  })
+  assignedEditor: mongoose.Schema.Types.ObjectId;
 }
 export const ProgramSchema = SchemaFactory.createForClass(Programs);

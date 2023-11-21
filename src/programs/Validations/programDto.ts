@@ -92,3 +92,15 @@ export class RequestCreateDTO {
   @IsOptional()
   challengesFaced: string;
 }
+
+export class AssignEditorDTO {
+  @IsMongoId()
+  @IsNotEmpty()
+  programId: mongoose.Schema.Types.ObjectId;
+  @IsMongoId()
+  @IsNotEmpty()
+  editorId: mongoose.Schema.Types.ObjectId;
+  @IsMongoId()
+  @IsNotEmpty()
+  producerId: mongoose.Schema.Types.ObjectId;
+}

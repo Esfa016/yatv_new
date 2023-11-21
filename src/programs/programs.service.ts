@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Programs, requestStatus } from './Models/programSchema';
 import mongoose, { Model } from 'mongoose';
 import { Response } from 'express';
-import { RequestCreateDTO } from './Validations/programDto';
+import { AssignEditorDTO, RequestCreateDTO } from './Validations/programDto';
 import { ErrorMessage, SuccessMessages } from 'src/Global/messages';
 import { UserAccount } from 'src/auth/Types/accountStatus';
 import { PaginationDto, PaginationHelper } from 'src/Global/helpers';
@@ -38,12 +38,9 @@ export class ProgramsService {
     }
   }
 
-  async getRequests(
-    @Res() response: Response,
-    pagination: PaginationDto,
-  ) {
+  async getRequests(@Res() response: Response, pagination: PaginationDto) {
     try {
-      const { page, limit, ...filtering } = pagination
+      const { page, limit, ...filtering } = pagination;
       const data = await this.programs
         .find(filtering)
         .skip(PaginationHelper.paginateQuery(pagination))
@@ -52,7 +49,7 @@ export class ProgramsService {
         .populate('approvedBy', { password: 0 })
         .populate('producerDetails', { password: 0 })
         .populate('equipments')
-      .populate('assignedCameraMen',{'password':0})
+        .populate('assignedCameraMen', { password: 0 });
       return response
         .status(HttpStatus.OK)
         .json({ success: true, requests: data });
@@ -106,5 +103,19 @@ export class ProgramsService {
     }
   }
 
-
+  async assignEditorAndProducer(
+    @Res() response: Response,
+    body:AssignEditorDTO
+  ) {
+    try {
+      const programFound = await this.programs.findByIdAndUpdate(body.programId, { $set: { producerDetails: body.producerId, assignedEditor: body.editorId } })
+      if (!programFound) throw new NotFoundException(ErrorMessage.productNotFound)
+      return response.status(HttpStatus.OK).json({success:true,message:SuccessMessages.updateSuccessful, program:programFound})
+     }
+    catch (error) {
+      if (!(error instanceof InternalServerErrorException)) throw error;
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
+    }
+  }
 }
