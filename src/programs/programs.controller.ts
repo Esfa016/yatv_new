@@ -38,4 +38,9 @@ export class ProgramsController {
   rejectRequest(@Res() response, @Param() param: MongooseIdDto) {
     return this.programService.apporveRequest(response, param.id);
   }
+    @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.EDITOR]))
+    @Get('/assigned')
+    getAssigned(@Res() response, @Query() query: PaginationDto, @Req() request) {
+        return this.programService.getAssignedPrograms(response,request.user.id,query)
+    }
 }

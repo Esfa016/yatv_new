@@ -49,7 +49,9 @@ export class ProgramsService {
         .populate('approvedBy', { password: 0 })
         .populate('producerDetails', { password: 0 })
         .populate('equipments')
-        .populate('assignedCameraMen', { password: 0 });
+        .populate('assignedCameraMen', { password: 0 })
+        .populate('producerDetails', { password: 0 })
+        .populate('assignedEditor', { password: 0 });
       return response
         .status(HttpStatus.OK)
         .json({ success: true, requests: data });
@@ -105,15 +107,53 @@ export class ProgramsService {
 
   async assignEditorAndProducer(
     @Res() response: Response,
-    body:AssignEditorDTO
+    body: AssignEditorDTO,
   ) {
     try {
-      const programFound = await this.programs.findByIdAndUpdate(body.programId, { $set: { producerDetails: body.producerId, assignedEditor: body.editorId } })
-      if (!programFound) throw new NotFoundException(ErrorMessage.productNotFound)
-      return response.status(HttpStatus.OK).json({success:true,message:SuccessMessages.updateSuccessful, program:programFound})
-     }
-    catch (error) {
+      const programFound = await this.programs.findByIdAndUpdate(
+        body.programId,
+        {
+          $set: {
+            producerDetails: body.producerId,
+            assignedEditor: body.editorId,
+          },
+        },
+      );
+      if (!programFound)
+        throw new NotFoundException(ErrorMessage.productNotFound);
+      return response.status(HttpStatus.OK).json({
+        success: true,
+        message: SuccessMessages.updateSuccessful,
+        program: programFound,
+      });
+    } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
+    }
+  }
+
+  async getAssignedPrograms(
+    @Res() response: Response,
+    id: mongoose.Schema.Types.ObjectId,
+    paginate: PaginationDto,
+  ) {
+    try {
+      const programs = await this.programs
+        .find({ assignedEditor: id })
+        .skip(PaginationHelper.paginateQuery(paginate))
+        .limit(paginate.limit)
+        .populate('department')
+        .populate('approvedBy', { password: 0 })
+        .populate('producerDetails', { password: 0 })
+        .populate('equipments')
+        .populate('assignedCameraMen', { password: 0 })
+        .populate('producerDetails', { password: 0 })
+        .populate('assignedEditor', { password: 0 });
+      return response
+        .status(HttpStatus.OK)
+        .json({ success: true, programs: programs });
+    } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
