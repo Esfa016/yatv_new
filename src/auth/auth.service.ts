@@ -68,7 +68,7 @@ export class AuthService {
       );
       return response
         .status(HttpStatus.OK)
-        .json({ success: true, accessToken: accessToken });
+        .json({ success: true, accessToken: accessToken, role:userFound.role });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
       console.error(error);

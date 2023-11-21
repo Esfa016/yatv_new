@@ -44,11 +44,8 @@ export class ProgramsService {
   ) {
     try {
       const { page, limit, ...filtering } = pagination
-      console.log(filtering);
       const data = await this.programs
-        .find({
-          status: requestStatus.PENDING,
-        })
+        .find(filtering)
         .skip(PaginationHelper.paginateQuery(pagination))
         .limit(pagination.limit)
         .populate('department')
