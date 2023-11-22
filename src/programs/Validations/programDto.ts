@@ -35,7 +35,7 @@ import {
 } from 'class-validator';
 import { Types } from 'mongoose';
 
- function IsArrayOfObjectIds(validationOptions?: ValidationOptions) {
+function IsArrayOfObjectIds(validationOptions?: ValidationOptions) {
   return function (object: Record<string, any>, propertyName: string) {
     registerDecorator({
       name: 'isArrayOfObjectIds',
@@ -59,8 +59,10 @@ import { Types } from 'mongoose';
   };
 }
 
-
 export class RequestCreateDTO {
+  @IsString()
+  @IsNotEmpty()
+  title: string; 
   @IsDate()
   @IsNotEmpty()
   @Type(() => Date)

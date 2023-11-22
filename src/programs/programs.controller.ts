@@ -43,4 +43,9 @@ export class ProgramsController {
     getAssigned(@Res() response, @Query() query: PaginationDto, @Req() request) {
         return this.programService.getAssignedPrograms(response,request.user.id,query)
     }
+  
+  @Get('/:id')
+  getOneProgram(@Res() response, @Param() id: MongooseIdDto) {
+    return this.programService.getOneById(response,id.id)
+  }
 }

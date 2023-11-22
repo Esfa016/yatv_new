@@ -12,6 +12,8 @@ export enum requestStatus {
 }
 @Schema({ timestamps: true, strict: false })
 export class Programs {
+  @Prop({})
+    title:String
   @Prop({ type: Date })
   recordingDate: Date;
   @Prop()
@@ -50,5 +52,7 @@ export class Programs {
     required: false,
   })
   assignedEditor: mongoose.Schema.Types.ObjectId;
+  @Prop({ type: Boolean, default: false })
+  completed:boolean
 }
 export const ProgramSchema = SchemaFactory.createForClass(Programs);

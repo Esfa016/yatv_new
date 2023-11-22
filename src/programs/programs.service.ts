@@ -41,6 +41,7 @@ export class ProgramsService {
   async getRequests(@Res() response: Response, pagination: PaginationDto) {
     try {
       const { page, limit, ...filtering } = pagination;
+       const totalData = await this.programs.countDocuments(filtering)
       const data = await this.programs
         .find(filtering)
         .skip(PaginationHelper.paginateQuery(pagination))
@@ -54,7 +55,7 @@ export class ProgramsService {
         .populate('assignedEditor', { password: 0 });
       return response
         .status(HttpStatus.OK)
-        .json({ success: true, requests: data });
+        .json({ success: true, requests: data , totalData:totalData});
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
@@ -156,6 +157,27 @@ export class ProgramsService {
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
+    }
+  }
+
+  async getOneById(@Res() response: Response, id: mongoose.Schema.Types.ObjectId) {
+    try { 
+      const program = await this.programs
+        .findById(id)
+        .populate('department')
+        .populate('approvedBy', { password: 0 })
+        .populate('producerDetails', { password: 0 })
+        .populate('equipments')
+        .populate('assignedCameraMen', { password: 0 })
+        .populate('producerDetails', { password: 0 })
+        .populate('assignedEditor', { password: 0 });
+      if(!program) throw new NotFoundException(ErrorMessage.productNotFound)
+      return response.status(HttpStatus.OK).json({success:true, program:program})
+    }
+    catch (error) {
+      if (!(error instanceof InternalServerErrorException)) throw error
+      console.error(error)
+      throw new InternalServerErrorException(ErrorMessage.internalServerError)
     }
   }
 }

@@ -24,3 +24,9 @@ export class LoginUserDto{
     @IsNotEmpty()
     userPin:string
 }
+
+export class ChangePasswordDto{
+  @IsStrongPassword()
+  @IsNotEmpty()
+  userPin:string
+}

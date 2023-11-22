@@ -12,7 +12,7 @@ export const ErrorMessage = {
   otpMissmatch: 'The otp is not correct.',
   verificationRequired: 'Please verfiy your account.',
   invalidDeletion: 'You did not create user account by this id.',
-  productNotFound: "Product not found.",
+  productNotFound: "Program not found.",
   requestNotFound:"Request not found. It may have been deleted."
  
 };
