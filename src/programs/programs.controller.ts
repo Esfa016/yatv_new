@@ -48,4 +48,9 @@ export class ProgramsController {
   getOneProgram(@Res() response, @Param() id: MongooseIdDto) {
     return this.programService.getOneById(response,id.id)
   }
+  @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.EDITOR]))
+  @Patch('/complete/:id')
+  completeProgram(@Res() response, @Param() id: MongooseIdDto) {
+   return this.programService.completeProgram(response,id.id) 
+  }
 }
