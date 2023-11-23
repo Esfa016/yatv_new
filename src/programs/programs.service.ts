@@ -117,6 +117,7 @@ export class ProgramsService {
           $set: {
             producerDetails: body.producerId,
             assignedEditor: body.editorId,
+            status:requestStatus.ASSIGNED
           },
         },
       );
@@ -186,7 +187,7 @@ export class ProgramsService {
   }
   async completeProgram(@Res() response: Response, id: mongoose.Schema.Types.ObjectId) {
     try { 
-      const programFound = await this.programs.findByIdAndUpdate(id, { $set: { completed: true } })
+      const programFound = await this.programs.findByIdAndUpdate(id, { $set: { completed: true , status:requestStatus.COMPLETED} })
       if (!programFound) throw new NotFoundException(ErrorMessage.productNotFound)
       return response.status(HttpStatus.OK).json({success:true, message:SuccessMessages.updateSuccessful, program:programFound})
     }

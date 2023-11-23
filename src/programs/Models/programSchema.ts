@@ -9,6 +9,8 @@ export enum requestStatus {
   PENDING = 'pending',
   APPROVED = 'approved',
   REJECTED = 'rejected',
+  ASSIGNED = 'assigned',
+  COMPLETED = 'completed'
 }
 @Schema({ timestamps: true, strict: false })
 export class Programs {
