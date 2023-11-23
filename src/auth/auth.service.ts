@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
@@ -21,6 +22,8 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { PaginationDto, PaginationHelper } from 'src/Global/helpers';
 import { NotFoundError } from 'rxjs';
+import { AccountStatus } from './Types/accountStatus';
+import { UserRoles } from './Types/roles';
 @Injectable()
 export class AuthService {
   constructor(
@@ -62,6 +65,7 @@ export class AuthService {
       const userFound = await this.users.findOne({ username: body.username });
       if (!userFound)
         throw new UnauthorizedException(ErrorMessage.incorrectCredentials);
+      if(userFound.status !== AccountStatus.ACTIVE) throw new ForbiddenException(ErrorMessage.accountDisabled)
       const passMatch = await bcrypt.compare(body.userPin, userFound.userPin);
       if (!passMatch)
         throw new UnauthorizedException(ErrorMessage.incorrectCredentials);
@@ -123,16 +127,70 @@ export class AuthService {
   }
 
   async findOne(@Res() response: Response, id: mongoose.Schema.Types.ObjectId) {
-    try { 
-      const data = await this.users.findById(id, { 'userPin': 0 })
-      if(!data) throw new NotFoundException(ErrorMessage.userNotFound)
-      return response.status(HttpStatus.OK).json({success:true,user:data})
-    }
-    catch (error) {
-      if (!(error instanceof InternalServerErrorException)) throw error
+    try {
+      const data = await this.users.findById(id, { userPin: 0 });
+      if (!data) throw new NotFoundException(ErrorMessage.userNotFound);
+      return response.status(HttpStatus.OK).json({ success: true, user: data });
+    } catch (error) {
+      if (!(error instanceof InternalServerErrorException)) throw error;
       console.error(error);
-      throw new InternalServerErrorException(ErrorMessage.internalServerError)
-      
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
+    }
+  }
+  async disableUser(
+    @Res() response: Response,
+    id: mongoose.Schema.Types.ObjectId,
+  ) {
+    try {
+      const userFound = await this.users.findById(id)
+      if (!userFound) throw new NotFoundException(ErrorMessage.userNotFound);
+      if (userFound.role === UserRoles.SUPER_ADMIN) throw new ForbiddenException(ErrorMessage.forbidden)
+      userFound.status = AccountStatus.INACTIVE
+      await userFound.save()
+      return response
+        .status(HttpStatus.OK)
+        .json({ success: true, message: SuccessMessages.updateSuccessful });
+    } catch (error) {
+      if (!(error instanceof InternalServerErrorException)) throw error;
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
+    }
+  }
+  async enableUser(
+    @Res() response: Response,
+    id: mongoose.Schema.Types.ObjectId,
+  ) {
+    try {
+      const userFound = await this.users.findByIdAndUpdate(id, {
+        $set: { status: AccountStatus.ACTIVE },
+      });
+      if (!userFound) throw new NotFoundException(ErrorMessage.userNotFound);
+      return response
+        .status(HttpStatus.OK)
+        .json({ success: true, message: SuccessMessages.updateSuccessful });
+    } catch (error) {
+      if (!(error instanceof InternalServerErrorException)) throw error;
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
+    }
+  }
+  async archiveUser(
+    @Res() response: Response,
+    id: mongoose.Schema.Types.ObjectId,
+  ) {
+    try {
+      const userFound = await this.users.findById(id)
+      if (!userFound) throw new NotFoundException(ErrorMessage.userNotFound);
+      if (userFound.role === UserRoles.SUPER_ADMIN) throw new ForbiddenException(ErrorMessage.forbidden)
+      userFound.status = AccountStatus.ARCHIVED
+      await userFound.save()
+      return response
+        .status(HttpStatus.OK)
+        .json({ success: true, message: SuccessMessages.updateSuccessful });
+    } catch (error) {
+      if (!(error instanceof InternalServerErrorException)) throw error;
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 }

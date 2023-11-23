@@ -197,4 +197,26 @@ export class ProgramsService {
        throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
+
+  async getProgramReports() {
+    try {
+      const pending = await this.programs.countDocuments({ status: requestStatus.PENDING })
+      const completed = await this.programs.countDocuments({ status: requestStatus.COMPLETED })
+      const rejected = await this.programs.countDocuments({ status: requestStatus.REJECTED })
+      const approved = await this.programs.countDocuments({ status: requestStatus.APPROVED })
+      const assigned = await this.programs.countDocuments({ status: requestStatus.ASSIGNED })
+      return {
+        pending: pending,
+        completed: completed,
+        rejected: rejected,
+        approved: approved,
+        assigned:assigned
+      }
+  }
+    catch (error)
+    {
+      console.error(error)
+      throw new InternalServerErrorException(ErrorMessage.internalServerError)
+    }
+  }
 }
