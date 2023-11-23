@@ -65,7 +65,8 @@ export class AuthService {
       const userFound = await this.users.findOne({ username: body.username });
       if (!userFound)
         throw new UnauthorizedException(ErrorMessage.incorrectCredentials);
-      if(userFound.status !== AccountStatus.ACTIVE) throw new ForbiddenException(ErrorMessage.accountDisabled)
+      if (userFound.status !== AccountStatus.ACTIVE)
+        throw new ForbiddenException(ErrorMessage.accountDisabled);
       const passMatch = await bcrypt.compare(body.userPin, userFound.userPin);
       if (!passMatch)
         throw new UnauthorizedException(ErrorMessage.incorrectCredentials);
@@ -142,11 +143,12 @@ export class AuthService {
     id: mongoose.Schema.Types.ObjectId,
   ) {
     try {
-      const userFound = await this.users.findById(id)
+      const userFound = await this.users.findById(id);
       if (!userFound) throw new NotFoundException(ErrorMessage.userNotFound);
-      if (userFound.role === UserRoles.SUPER_ADMIN) throw new ForbiddenException(ErrorMessage.forbidden)
-      userFound.status = AccountStatus.INACTIVE
-      await userFound.save()
+      if (userFound.role === UserRoles.SUPER_ADMIN)
+        throw new ForbiddenException(ErrorMessage.forbidden);
+      userFound.status = AccountStatus.INACTIVE;
+      await userFound.save();
       return response
         .status(HttpStatus.OK)
         .json({ success: true, message: SuccessMessages.updateSuccessful });
@@ -179,11 +181,12 @@ export class AuthService {
     id: mongoose.Schema.Types.ObjectId,
   ) {
     try {
-      const userFound = await this.users.findById(id)
+      const userFound = await this.users.findById(id);
       if (!userFound) throw new NotFoundException(ErrorMessage.userNotFound);
-      if (userFound.role === UserRoles.SUPER_ADMIN) throw new ForbiddenException(ErrorMessage.forbidden)
-      userFound.status = AccountStatus.ARCHIVED
-      await userFound.save()
+      if (userFound.role === UserRoles.SUPER_ADMIN)
+        throw new ForbiddenException(ErrorMessage.forbidden);
+      userFound.status = AccountStatus.ARCHIVED;
+      await userFound.save();
       return response
         .status(HttpStatus.OK)
         .json({ success: true, message: SuccessMessages.updateSuccessful });
@@ -191,6 +194,39 @@ export class AuthService {
       if (!(error instanceof InternalServerErrorException)) throw error;
       console.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
+    }
+  }
+  async getFilterd(@Res() response:Response, query: PaginationDto) {
+    try {
+      const { page, limit, ...filtering } = query;
+      const totalData = await this.users.countDocuments(filtering);
+      const data = await this.users
+        .find(filtering, { userPin: 0 })
+        .skip(PaginationHelper.paginateQuery(query))
+        .limit(query.limit);
+      return response.status(HttpStatus.OK).json({success:true,users:data})
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
+    }
+  }
+
+  async userReports() {
+    try { 
+      const active = await this.users.countDocuments({ status: AccountStatus.ACTIVE })
+      const archived = await this.users.countDocuments({ status: AccountStatus.ARCHIVED })
+      const inactive = await this.users.countDocuments({ status: AccountStatus.INACTIVE })
+      const totalUsers = await this.users.countDocuments()
+      return {
+        active: active,
+        archived: archived,
+        inactive: inactive,
+        totalUsers:totalUsers
+      }
+    }
+    catch (error) {
+      console.error(error)
+      throw new InternalServerErrorException(ErrorMessage.internalServerError)
     }
   }
 }

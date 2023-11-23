@@ -7,6 +7,7 @@ import { ProgramSchema, Programs } from './Models/programSchema';
 @Module({
   imports:[MongooseModule.forFeature([{name:Programs.name,schema:ProgramSchema}])],
   controllers: [ProgramsController],
-  providers: [ProgramsService]
+  providers: [ProgramsService],
+  exports:[ProgramsService]
 })
 export class ProgramsModule {}

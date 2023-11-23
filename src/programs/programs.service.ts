@@ -205,12 +205,23 @@ export class ProgramsService {
       const rejected = await this.programs.countDocuments({ status: requestStatus.REJECTED })
       const approved = await this.programs.countDocuments({ status: requestStatus.APPROVED })
       const assigned = await this.programs.countDocuments({ status: requestStatus.ASSIGNED })
+      const totalData = await this.programs.countDocuments({})
+     const pendingPercentage = (pending / totalData) * 100;
+     const completedPercentage = (completed / totalData) * 100;
+     const rejectedPercentage = (rejected / totalData) * 100;
+     const approvedPercentage = (approved / totalData) * 100;
+     const assignedPercentage = (assigned / totalData) * 100;
       return {
         pending: pending,
         completed: completed,
         rejected: rejected,
         approved: approved,
-        assigned:assigned
+        assigned: assigned,
+        pendingPercentage: pendingPercentage,
+        completedPercentage: completedPercentage,
+        rejectedPercentage: rejectedPercentage,
+        approvedPercentage: approvedPercentage,
+        assignedPercentage:assignedPercentage
       }
   }
     catch (error)

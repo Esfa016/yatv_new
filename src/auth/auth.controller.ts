@@ -55,4 +55,9 @@ export class AuthController {
   archiveUser(@Res() response, @Param() id: MongooseIdDto) {
     return this.userService.archiveUser(response, id.id);
   }
+    @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.ADMIN, UserRoles.SUPER_ADMIN]))
+    @Get('users/filtered')
+    filterdUser(@Res() response, @Query() query: PaginationDto) {
+        return this.userService.getFilterd(response,query)
+    }
 }
