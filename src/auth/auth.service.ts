@@ -94,7 +94,7 @@ export class AuthService {
     try {
       const totalData = await this.users.countDocuments();
       const users = await this.users
-        .find()
+        .find({role:{$ne:UserRoles.SUPER_ADMIN}})
         .skip(PaginationHelper.paginateQuery(paginationDto))
         .limit(paginationDto.limit)
         .populate('userPin', 0);

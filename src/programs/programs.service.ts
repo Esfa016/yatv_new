@@ -221,7 +221,8 @@ export class ProgramsService {
         completedPercentage: completedPercentage,
         rejectedPercentage: rejectedPercentage,
         approvedPercentage: approvedPercentage,
-        assignedPercentage:assignedPercentage
+        assignedPercentage: assignedPercentage,
+        totalPrograms:totalData
       }
   }
     catch (error)
