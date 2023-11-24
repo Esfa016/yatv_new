@@ -20,6 +20,7 @@ export class CreateUserDto {
   @IsEnum(AllowedUserRoles)
   @IsNotEmpty()
   role: string;
+
 }
 
 export class LoginUserDto {

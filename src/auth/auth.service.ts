@@ -204,7 +204,7 @@ export class AuthService {
         .find(filtering, { userPin: 0 })
         .skip(PaginationHelper.paginateQuery(query))
         .limit(query.limit);
-      return response.status(HttpStatus.OK).json({success:true,users:data})
+      return response.status(HttpStatus.OK).json({success:true,users:data, totalData:totalData})
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
