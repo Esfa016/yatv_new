@@ -16,6 +16,7 @@ import {
   ChangePasswordDto,
   CreateUserDto,
   LoginUserDto,
+  UpdateUserDto,
 } from './Validations/userDTO';
 import { ErrorMessage, SuccessMessages } from 'src/Global/messages';
 import * as bcrypt from 'bcrypt';
@@ -94,7 +95,7 @@ export class AuthService {
     try {
       const totalData = await this.users.countDocuments();
       const users = await this.users
-        .find({role:{$ne:UserRoles.SUPER_ADMIN}})
+        .find({ role: { $ne: UserRoles.SUPER_ADMIN } })
         .skip(PaginationHelper.paginateQuery(paginationDto))
         .limit(paginationDto.limit)
         .populate('userPin', 0);
@@ -196,7 +197,7 @@ export class AuthService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
-  async getFilterd(@Res() response:Response, query: PaginationDto) {
+  async getFilterd(@Res() response: Response, query: PaginationDto) {
     try {
       const { page, limit, ...filtering } = query;
       const totalData = await this.users.countDocuments(filtering);
@@ -204,7 +205,9 @@ export class AuthService {
         .find(filtering, { userPin: 0 })
         .skip(PaginationHelper.paginateQuery(query))
         .limit(query.limit);
-      return response.status(HttpStatus.OK).json({success:true,users:data, totalData:totalData})
+      return response
+        .status(HttpStatus.OK)
+        .json({ success: true, users: data, totalData: totalData });
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
@@ -212,21 +215,47 @@ export class AuthService {
   }
 
   async userReports() {
-    try { 
-      const active = await this.users.countDocuments({ status: AccountStatus.ACTIVE })
-      const archived = await this.users.countDocuments({ status: AccountStatus.ARCHIVED })
-      const inactive = await this.users.countDocuments({ status: AccountStatus.INACTIVE })
-      const totalUsers = await this.users.countDocuments()
+    try {
+      const active = await this.users.countDocuments({
+        status: AccountStatus.ACTIVE,
+      });
+      const archived = await this.users.countDocuments({
+        status: AccountStatus.ARCHIVED,
+      });
+      const inactive = await this.users.countDocuments({
+        status: AccountStatus.INACTIVE,
+      });
+      const totalUsers = await this.users.countDocuments();
       return {
         active: active,
         archived: archived,
         inactive: inactive,
-        totalUsers:totalUsers
-      }
+        totalUsers: totalUsers,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
-    catch (error) {
-      console.error(error)
-      throw new InternalServerErrorException(ErrorMessage.internalServerError)
+  }
+  async updateUser(
+    @Res() response: Response,
+    id: mongoose.Schema.Types.ObjectId,
+    userData: UpdateUserDto,
+  ) {
+    try {
+      if (userData.userPin) delete userData.userPin;
+      if (userData.username) delete userData.username;
+      await this.users.findByIdAndUpdate(id, userData);
+      return response
+        .status(HttpStatus.OK)
+        .json({
+          success: true,
+          message: SuccessMessages.updateSuccessful,
+          user: userData,
+        });
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 }

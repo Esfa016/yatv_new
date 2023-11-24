@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { UserAuthGuard } from './Jwt/authGuard';
 import { RbacGuard } from './Guards/roleGuard';
 import { UserRoles } from './Types/roles';
-import { ChangePasswordDto, CreateUserDto, LoginUserDto } from './Validations/userDTO';
+import { ChangePasswordDto, CreateUserDto, LoginUserDto, UpdateUserDto } from './Validations/userDTO';
 import { MongooseIdDto, PaginationDto } from 'src/Global/helpers';
 
 @Controller('auth')
@@ -60,4 +60,11 @@ export class AuthController {
     filterdUser(@Res() response, @Query() query: PaginationDto) {
         return this.userService.getFilterd(response,query)
     }
+  
+  @UseGuards(UserAuthGuard)
+  @Put('')
+  updateUser(@Res() response, @Body() body: UpdateUserDto, @Req() request) {
+    return this.userService.updateUser(response,request.user.id,body)
+    
+  }
 }

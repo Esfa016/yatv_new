@@ -1,6 +1,7 @@
 import {
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsPhoneNumber,
   IsString,
   IsStrongPassword,
@@ -22,6 +23,27 @@ export class CreateUserDto {
   role: string;
 
 }
+export class UpdateUserDto {
+  @IsString()
+  @IsOptional()
+  firstName: string;
+  @IsString()
+  @IsOptional()
+  lastName: string;
+  @IsString()
+  @IsOptional()
+  phoneNumber: string;
+  @IsEnum(AllowedUserRoles)
+  @IsOptional()
+  role: string;
+  @IsOptional()
+  @IsString()
+  userPin: string;
+  @IsOptional()
+  @IsString()
+  username: string;
+}
+
 
 export class LoginUserDto {
   @IsString()
