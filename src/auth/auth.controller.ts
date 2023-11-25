@@ -67,4 +67,9 @@ export class AuthController {
     return this.userService.updateUser(response,request.user.id,body)
     
   }
+  @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.ADMIN, UserRoles.SUPER_ADMIN]))
+  @Put('/asAdmin/:id')
+  updateAsAdmin(@Res() response, @Body() body: UpdateUserDto, @Param() id: MongooseIdDto) {
+    return this.userService.updateUser(response,id.id,body)
+  }
 }
