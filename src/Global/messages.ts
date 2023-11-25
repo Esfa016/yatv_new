@@ -12,9 +12,9 @@ export const ErrorMessage = {
   otpMissmatch: 'The otp is not correct.',
   verificationRequired: 'Please verfiy your account.',
   invalidDeletion: 'You did not create user account by this id.',
-  productNotFound: "Program not found.",
-  requestNotFound:"Request not found. It may have been deleted."
- 
+  productNotFound: 'Program not found.',
+  requestNotFound: 'Request not found. It may have been deleted.',
+  departmentNotFound:'Department not found.'
 };
 export const SuccessMessages = {
   saveSuccessful: 'Successfully created.',

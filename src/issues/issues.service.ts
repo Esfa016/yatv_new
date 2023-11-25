@@ -39,8 +39,9 @@ export class IssuesService {
   async getAllIssues(@Res() response: Response, pagination: PaginationDto) {
     try {
       const totalData = await this.issues.countDocuments();
+      const {page,limit,...filtering} = pagination
       const data = await this.issues
-        .find()
+        .find(filtering)
         .skip(PaginationHelper.paginateQuery(pagination))
         .limit(pagination.limit)
         .populate('editor', { password: 0 })
@@ -60,6 +61,7 @@ export class IssuesService {
     paginate: PaginationDto,
   ) {
     try {
+      const totalData =  await this.issues.countDocuments({editor:id})
       const data = await this.issues
         .find({ editor: id })
         .populate('editor', { password: 0 })
@@ -68,7 +70,7 @@ export class IssuesService {
         .limit(paginate.limit);
       return response
         .status(HttpStatus.OK)
-        .json({ success: true, issues: data });
+        .json({ success: true, issues: data , totalData:totalData});
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
