@@ -95,10 +95,10 @@ export class AuthService {
     try {
       const totalData = await this.users.countDocuments();
       const users = await this.users
-        .find({ role: { $ne: UserRoles.SUPER_ADMIN } })
+        .find({ role: { $ne: UserRoles.SUPER_ADMIN } },{'userPin':0})
         .skip(PaginationHelper.paginateQuery(paginationDto))
         .limit(paginationDto.limit)
-        .populate('userPin', 0);
+        .populate('department');
       return response
         .status(HttpStatus.OK)
         .json({ success: true, users: users, totalData: totalData });
@@ -130,7 +130,7 @@ export class AuthService {
 
   async findOne(@Res() response: Response, id: mongoose.Schema.Types.ObjectId) {
     try {
-      const data = await this.users.findById(id, { userPin: 0 });
+      const data = await this.users.findById(id, { userPin: 0 }).populate('department');
       if (!data) throw new NotFoundException(ErrorMessage.userNotFound);
       return response.status(HttpStatus.OK).json({ success: true, user: data });
     } catch (error) {
@@ -204,7 +204,8 @@ export class AuthService {
       const data = await this.users
         .find(filtering, { userPin: 0 })
         .skip(PaginationHelper.paginateQuery(query))
-        .limit(query.limit);
+        .limit(query.limit)
+        .populate('department');;
       return response
         .status(HttpStatus.OK)
         .json({ success: true, users: data, totalData: totalData });

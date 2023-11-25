@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { AccountStatus } from '../Types/accountStatus';
 import { UserRoles } from '../Types/roles';
 import * as bcrypt from 'bcrypt'
+import { Departments } from 'src/departments/Models/departmentSchema';
 @Schema({ timestamps: true, strict: false })
 export class Users{
     @Prop()
@@ -13,7 +14,7 @@ export class Users{
     username: String
     @Prop({default:'123456'})
     userPin: String
-    @Prop({ type: mongoose.Schema.Types.ObjectId })
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref:Departments.name })
     department: mongoose.Schema.Types.ObjectId
     @Prop({ type: String })
     phoneNumber: String
