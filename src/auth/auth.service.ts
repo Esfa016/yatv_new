@@ -103,7 +103,7 @@ export class AuthService {
         .status(HttpStatus.OK)
         .json({ success: true, users: users, totalData: totalData });
     } catch (error) {
-      console.error(error);
+      console.error(error); 
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }

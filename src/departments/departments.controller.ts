@@ -64,4 +64,8 @@ export class DepartmentsController {
   deleteOne(@Res() response, @Param() id: MongooseIdDto) {
     return this.departmentService.deleteDepartment(response, id.id);
   }
+  @Get('/:id')
+  getOne(@Res() response, @Param() id: MongooseIdDto) {
+    return this.departmentService.getOne(response,id.id)
+  }
 }

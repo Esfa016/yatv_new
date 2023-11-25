@@ -92,4 +92,15 @@ export class DepartmentsService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
+
+  async getOne(response: Response, id: mongoose.Schema.Types.ObjectId) {
+    try { 
+      const depFound = await this.departments.findById(id)
+      if (!depFound) throw new NotFoundException(ErrorMessage.departmentNotFound)
+       return response.status(HttpStatus.OK).json({success:true,department:depFound})
+    }
+    catch (error) {
+      if(!(error instanceof InternalServerErrorException)) throw error
+    }
+  }
 }
