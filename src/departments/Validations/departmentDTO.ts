@@ -6,6 +6,9 @@ export class CreateDepatmentDTO {
   title: string;
   @IsString()
   @IsNotEmpty()
+  description: string;
+  @IsString()
+  @IsNotEmpty()
   responsibilities: string;
 }
 

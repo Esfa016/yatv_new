@@ -3,9 +3,10 @@ import mongoose, { Document } from 'mongoose';
 import { Users } from 'src/auth/Models/userSchema';
 import { Departments } from 'src/departments/Models/departmentSchema';
 import { Product } from 'src/products/Model/productModel';
+import { Programs } from 'src/programs/Models/programSchema';
 @Schema({ timestamps: true })
 export class Issue extends Document {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Product.name })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Programs.name })
   processedProgram: mongoose.Schema.Types.ObjectId;
   @Prop()
   beginDate: Date;

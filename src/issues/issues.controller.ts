@@ -30,4 +30,8 @@ export class IssuesController {
   getOwn(@Res() response, @Query() query:PaginationDto, @Req() request) {
       return this.issueService.getOwnIssues(response,request.user.id,query)
   }
+  @Get('/:id')
+  getOne(@Res() response, @Param() id: MongooseIdDto) {
+    return this.issueService.getById(response,id.id)
+  }
 }

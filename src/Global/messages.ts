@@ -14,7 +14,8 @@ export const ErrorMessage = {
   invalidDeletion: 'You did not create user account by this id.',
   productNotFound: 'Program not found.',
   requestNotFound: 'Request not found. It may have been deleted.',
-  departmentNotFound:'Department not found.'
+  departmentNotFound: 'Department not found.',
+  programNotFound:'Product not found.'
 };
 export const SuccessMessages = {
   saveSuccessful: 'Successfully created.',

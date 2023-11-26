@@ -2,6 +2,7 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   Res,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -45,7 +46,8 @@ export class IssuesService {
         .skip(PaginationHelper.paginateQuery(pagination))
         .limit(pagination.limit)
         .populate('editor', { password: 0 })
-        .populate('department');
+        .populate('department')
+        .populate('processedProgram')
       return response
         .status(HttpStatus.OK)
         .json({ success: true, issues: data, totalData: totalData });
@@ -66,6 +68,7 @@ export class IssuesService {
         .find({ editor: id })
         .populate('editor', { password: 0 })
         .populate('department')
+        .populate('processedProgram')
         .skip(PaginationHelper.paginateQuery(paginate))
         .limit(paginate.limit);
       return response
@@ -85,7 +88,8 @@ export class IssuesService {
       const data = await this.issues
         .find({ processedProgram: id })
         .populate('editor', { password: 0 })
-        .populate('department');
+        .populate('department')
+        .populate('processedProgram');
       return response
         .status(HttpStatus.OK)
         .json({ success: true, issues: data });
@@ -94,4 +98,23 @@ export class IssuesService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
+
+  async getById(response: Response, id: mongoose.Schema.Types.ObjectId) {
+    try { 
+      const data = await this.issues
+        .findById(id)
+        .populate('editor', { password: 0 })
+        .populate('department')
+        .populate('processedProgram');
+      if(!data) throw new NotFoundException(ErrorMessage.programNotFound)
+      return response.status(HttpStatus.OK).json({success:true,issue:data})
+    }
+    catch (error) {
+      if (!(error instanceof InternalServerErrorException)) throw error
+      console.error(error)
+      throw new InternalServerErrorException(ErrorMessage.internalServerError)
+    }
+  }
+
+
 }
