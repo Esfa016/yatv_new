@@ -10,7 +10,7 @@ import { MongooseIdDto, PaginationDto } from 'src/Global/helpers';
 export class IssuesController {
   constructor(private issueService: IssuesService) {}
 
-  @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.EDITOR]))
+  @UseGuards(UserAuthGuard)
   @Post()
   createIssue(@Res() response, @Req() request, @Body() body: CreateIssueDTO) {
     return this.issueService.createIssue(response, body, request.user.id);
