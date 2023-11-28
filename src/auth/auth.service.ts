@@ -47,7 +47,7 @@ export class AuthService {
         console.log(userFound);
         throw new ConflictException(ErrorMessage.userExists);
       }
-
+      
       const userData = await this.users.create(body);
       return response.status(HttpStatus.CREATED).json({
         success: true,
@@ -65,12 +65,12 @@ export class AuthService {
     try {
       const userFound = await this.users.findOne({ username: body.username });
       if (!userFound)
-        throw new UnauthorizedException(ErrorMessage.incorrectCredentials + 'ff');
+        throw new UnauthorizedException(ErrorMessage.incorrectCredentials );
       if (userFound.status !== AccountStatus.ACTIVE)
         throw new ForbiddenException(ErrorMessage.accountDisabled);
       const passMatch = await bcrypt.compare(body.userPin, userFound.userPin);
       if (!passMatch)
-        throw new UnauthorizedException(ErrorMessage.incorrectCredentials+'jj');
+        throw new UnauthorizedException(ErrorMessage.incorrectCredentials);
       const accessToken = this.jwt.sign(
         {
           id: userFound.id,
@@ -148,8 +148,10 @@ export class AuthService {
       if (!userFound) throw new NotFoundException(ErrorMessage.userNotFound);
       if (userFound.role === UserRoles.SUPER_ADMIN)
         throw new ForbiddenException(ErrorMessage.forbidden);
-      userFound.status = AccountStatus.INACTIVE;
-      await userFound.save();
+    await this.users.updateOne(
+      { _id: userFound.id },
+      { $set: { status: AccountStatus.INACTIVE } },
+    );
       return response
         .status(HttpStatus.OK)
         .json({ success: true, message: SuccessMessages.updateSuccessful });
@@ -186,8 +188,7 @@ export class AuthService {
       if (!userFound) throw new NotFoundException(ErrorMessage.userNotFound);
       if (userFound.role === UserRoles.SUPER_ADMIN)
         throw new ForbiddenException(ErrorMessage.forbidden);
-      userFound.status = AccountStatus.ARCHIVED;
-      await userFound.save();
+       await this.users.updateOne({_id:userFound.id},{$set:{status:AccountStatus.ARCHIVED}})
       return response
         .status(HttpStatus.OK)
         .json({ success: true, message: SuccessMessages.updateSuccessful });
