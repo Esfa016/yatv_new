@@ -65,7 +65,7 @@ export class AuthService {
     try {
       const userFound = await this.users.findOne({ username: body.username });
       if (!userFound)
-        throw new UnauthorizedException(ErrorMessage.incorrectCredentials);
+        throw new UnauthorizedException(ErrorMessage.incorrectCredentials + 'ff');
       if (userFound.status !== AccountStatus.ACTIVE)
         throw new ForbiddenException(ErrorMessage.accountDisabled);
       const passMatch = await bcrypt.compare(body.userPin, userFound.userPin);

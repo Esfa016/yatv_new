@@ -37,6 +37,28 @@ export class ProgramsService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
+  async getOwnRequest(response: Response, pagination:PaginationDto, userAccount:UserAccount) {
+    try { 
+      const totalData = await this.programs.countDocuments({department:userAccount.department})
+      const data = await this.programs
+        .find({ department: userAccount.department })
+        .skip(PaginationHelper.paginateQuery(pagination))
+        .limit(pagination.limit)
+        .populate('department')
+        .populate('approvedBy', { password: 0 })
+        .populate('producerDetails', { password: 0 })
+        .populate('equipments')
+        .populate('assignedCameraMen', { password: 0 })
+        .populate('producerDetails', { password: 0 })
+        .populate('assignedEditor', { password: 0 });
+      return response.status(HttpStatus.OK).json({success:true,request:data, totalData:totalData})
+    }
+    
+    catch (error) {
+      console.error(error)
+      throw new InternalServerErrorException(ErrorMessage.internalServerError)
+    }
+  }
 
   async getRequests(@Res() response: Response, pagination: PaginationDto) {
     try {
@@ -200,12 +222,12 @@ export class ProgramsService {
 
   async getProgramReports() {
     try {
-      const pending = await this.programs.countDocuments({ status: requestStatus.PENDING })
-      const completed = await this.programs.countDocuments({ status: requestStatus.COMPLETED })
-      const rejected = await this.programs.countDocuments({ status: requestStatus.REJECTED })
-      const approved = await this.programs.countDocuments({ status: requestStatus.APPROVED })
-      const assigned = await this.programs.countDocuments({ status: requestStatus.ASSIGNED })
-      const totalData = await this.programs.countDocuments({})
+      const pending = await this.programs.countDocuments({ status: requestStatus.PENDING })??0
+      const completed = await this.programs.countDocuments({ status: requestStatus.COMPLETED })??0
+      const rejected = await this.programs.countDocuments({ status: requestStatus.REJECTED })??0
+      const approved = await this.programs.countDocuments({ status: requestStatus.APPROVED })??0
+      const assigned = await this.programs.countDocuments({ status: requestStatus.ASSIGNED })??0
+      const totalData = await this.programs.countDocuments({})??0
      const pendingPercentage = (pending / totalData) * 100;
      const completedPercentage = (completed / totalData) * 100;
      const rejectedPercentage = (rejected / totalData) * 100;

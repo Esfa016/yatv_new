@@ -53,4 +53,9 @@ export class ProgramsController {
   completeProgram(@Res() response, @Param() id: MongooseIdDto) {
    return this.programService.completeProgram(response,id.id) 
   }
+  @UseGuards(UserAuthGuard)
+  @Get('/departmentRequest')
+  ownRequests(@Res() response, @Req() request, @Query() query: PaginationDto) {
+    return this.programService.getOwnRequest(response,query,request.user)
+  }
 }
