@@ -70,7 +70,7 @@ export class AuthService {
         throw new ForbiddenException(ErrorMessage.accountDisabled);
       const passMatch = await bcrypt.compare(body.userPin, userFound.userPin);
       if (!passMatch)
-        throw new UnauthorizedException(ErrorMessage.incorrectCredentials);
+        throw new UnauthorizedException(ErrorMessage.incorrectCredentials+'jj');
       const accessToken = this.jwt.sign(
         {
           id: userFound.id,
