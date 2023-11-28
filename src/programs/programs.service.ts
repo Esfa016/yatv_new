@@ -37,9 +37,15 @@ export class ProgramsService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
-  async getOwnRequest(response: Response, pagination:PaginationDto, userAccount:UserAccount) {
-    try { 
-      const totalData = await this.programs.countDocuments({department:userAccount.department})
+  async getOwnRequest(
+    response: Response,
+    pagination: PaginationDto,
+    userAccount: UserAccount,
+  ) {
+    try {
+      const totalData = await this.programs.countDocuments({
+        department: userAccount.department,
+      });
       const data = await this.programs
         .find({ department: userAccount.department })
         .skip(PaginationHelper.paginateQuery(pagination))
@@ -51,12 +57,12 @@ export class ProgramsService {
         .populate('assignedCameraMen', { password: 0 })
         .populate('producerDetails', { password: 0 })
         .populate('assignedEditor', { password: 0 });
-      return response.status(HttpStatus.OK).json({success:true,request:data, totalData:totalData})
-    }
-    
-    catch (error) {
-      console.error(error)
-      throw new InternalServerErrorException(ErrorMessage.internalServerError)
+      return response
+        .status(HttpStatus.OK)
+        .json({ success: true, request: data, totalData: totalData });
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
@@ -139,7 +145,7 @@ export class ProgramsService {
           $set: {
             producerDetails: body.producerId,
             assignedEditor: body.editorId,
-            status:requestStatus.ASSIGNED
+            status: requestStatus.ASSIGNED,
           },
         },
       );
@@ -207,50 +213,76 @@ export class ProgramsService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
-  async completeProgram(@Res() response: Response, id: mongoose.Schema.Types.ObjectId) {
-    try { 
-      const programFound = await this.programs.findByIdAndUpdate(id, { $set: { completed: true , status:requestStatus.COMPLETED} })
-      if (!programFound) throw new NotFoundException(ErrorMessage.productNotFound)
-      return response.status(HttpStatus.OK).json({success:true, message:SuccessMessages.updateSuccessful, program:programFound})
-    }
-    catch (error) {
-       if (!(error instanceof InternalServerErrorException)) throw error;
-       console.error(error);
-       throw new InternalServerErrorException(ErrorMessage.internalServerError);
+  async completeProgram(
+    @Res() response: Response,
+    id: mongoose.Schema.Types.ObjectId,
+  ) {
+    try {
+      const programFound = await this.programs.findByIdAndUpdate(id, {
+        $set: { completed: true, status: requestStatus.COMPLETED },
+      });
+      if (!programFound)
+        throw new NotFoundException(ErrorMessage.productNotFound);
+      return response
+        .status(HttpStatus.OK)
+        .json({
+          success: true,
+          message: SuccessMessages.updateSuccessful,
+          program: programFound,
+        });
+    } catch (error) {
+      if (!(error instanceof InternalServerErrorException)) throw error;
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
   async getProgramReports() {
     try {
-      const pending = await this.programs.countDocuments({ status: requestStatus.PENDING })??0
-      const completed = await this.programs.countDocuments({ status: requestStatus.COMPLETED })??0
-      const rejected = await this.programs.countDocuments({ status: requestStatus.REJECTED })??0
-      const approved = await this.programs.countDocuments({ status: requestStatus.APPROVED })??0
-      const assigned = await this.programs.countDocuments({ status: requestStatus.ASSIGNED })??0
-      const totalData = await this.programs.countDocuments({})??0
-     const pendingPercentage = (pending / totalData) * 100;
-     const completedPercentage = (completed / totalData) * 100;
-     const rejectedPercentage = (rejected / totalData) * 100;
-     const approvedPercentage = (approved / totalData) * 100;
-     const assignedPercentage = (assigned / totalData) * 100;
+      const pending = await this.programs.countDocuments({
+        status: requestStatus.PENDING,
+      });
+      const completed = await this.programs.countDocuments({
+        status: requestStatus.COMPLETED,
+      });
+      const rejected = await this.programs.countDocuments({
+        status: requestStatus.REJECTED,
+      });
+      const approved = await this.programs.countDocuments({
+        status: requestStatus.APPROVED,
+      });
+      const assigned = await this.programs.countDocuments({
+        status: requestStatus.ASSIGNED,
+      });
+      const totalData = await this.programs.countDocuments({});
+
+      const pendingPercentage =
+        totalData !== 0 ? (pending / totalData) * 100 : 0;
+      const completedPercentage =
+        totalData !== 0 ? (completed / totalData) * 100 : 0;
+      const rejectedPercentage =
+        totalData !== 0 ? (rejected / totalData) * 100 : 0;
+      const approvedPercentage =
+        totalData !== 0 ? (approved / totalData) * 100 : 0;
+      const assignedPercentage =
+        totalData !== 0 ? (assigned / totalData) * 100 : 0;
+
       return {
         pending: pending,
         completed: completed,
         rejected: rejected,
         approved: approved,
         assigned: assigned,
-        pendingPercentage: pendingPercentage,
-        completedPercentage: completedPercentage,
-        rejectedPercentage: rejectedPercentage,
-        approvedPercentage: approvedPercentage,
-        assignedPercentage: assignedPercentage,
-        totalPrograms:totalData
-      }
-  }
-    catch (error)
-    {
-      console.error(error)
-      throw new InternalServerErrorException(ErrorMessage.internalServerError)
+        pendingPercentage: totalData !== 0 ? pendingPercentage : 0,
+        completedPercentage: totalData !== 0 ? completedPercentage : 0,
+        rejectedPercentage: totalData !== 0 ? rejectedPercentage : 0,
+        approvedPercentage: totalData !== 0 ? approvedPercentage : 0,
+        assignedPercentage: totalData !== 0 ? assignedPercentage : 0,
+        totalPrograms: totalData || 0,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 }
