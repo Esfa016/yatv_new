@@ -24,9 +24,6 @@ export class CreateIssueDTO {
   @IsString()
   @IsOptional()
   remainingWork: string;
-  @IsMongoId()
-  @IsNotEmpty()
-  department: string;
   @IsNotEmpty()
   @IsString()
   type: string;
