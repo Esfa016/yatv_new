@@ -93,7 +93,12 @@ export class AuthService {
 
   async getAllUsers(@Res() response: Response, paginationDto: PaginationDto) {
     try {
-      const totalData = await this.users.countDocuments();
+      const totalData = await this.users.countDocuments({
+        $and: [
+          { role: { $ne: UserRoles.SUPER_ADMIN } },
+          { role: { $ne: UserRoles.ADMIN } },
+        ],
+      });
       const users = await this.users
         .find(
           { $and: [{ role: { $ne: UserRoles.SUPER_ADMIN } }, {role:{$ne:UserRoles.ADMIN}}] },
