@@ -285,4 +285,13 @@ export class ProgramsService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
+  async findOne(id): Promise<Programs>{
+    try { 
+      return await this.programs.findById(id)
+    }
+    catch (error) {
+      console.error(error)
+      throw new InternalServerErrorException(ErrorMessage.internalServerError)
+    }
+  }
 }

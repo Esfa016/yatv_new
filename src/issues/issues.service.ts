@@ -12,18 +12,21 @@ import { CreateIssueDTO } from './Validations/issueDTO';
 import { ErrorMessage, SuccessMessages } from 'src/Global/messages';
 import { Response } from 'express';
 import { PaginationDto, PaginationHelper } from 'src/Global/helpers';
+import { ProgramsService } from 'src/programs/programs.service';
 
 @Injectable()
 export class IssuesService {
-  constructor(@InjectModel(Issue.name) private issues: Model<Issue>) {}
+  constructor(@InjectModel(Issue.name) private issues: Model<Issue>, private programService:ProgramsService) {}
   async createIssue(
     @Res() response: Response,
     body: CreateIssueDTO,
     editor: mongoose.Schema.Types.ObjectId,
   ) {
     try {
+      const programData = await this.programService.findOne(body.processedProgram)
       const data = await this.issues.create({
         ...body,
+        department:programData.department,
         editor: editor,
       });
       return response.status(HttpStatus.CREATED).json({
@@ -115,6 +118,4 @@ export class IssuesService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError)
     }
   }
-
-
-}
+ }
