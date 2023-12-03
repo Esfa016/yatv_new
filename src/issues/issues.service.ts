@@ -48,9 +48,18 @@ export class IssuesService {
         .find(filtering)
         .skip(PaginationHelper.paginateQuery(pagination))
         .limit(pagination.limit)
-        .populate('editor', { password: 0 })
+        .populate('editor', { userPin: 0 })
         .populate('department')
-        .populate('processedProgram')
+        .populate({
+          path: 'processedProgram',
+          populate: [
+            { path: 'assignedCameraMen', select: '-userPin' }, // Exclude password field
+            { path: 'equipments' },
+            { path: 'assignedEditor', select: '-userPin' }, // Exclude password field
+            { path: 'producerDetails',select:'-userPin' },
+            // Add more fields to populate if needed
+          ],
+        });
       return response
         .status(HttpStatus.OK)
         .json({ success: true, issues: data, totalData: totalData });
