@@ -169,8 +169,12 @@ export class ProgramsService {
     paginate: PaginationDto,
   ) {
     try {
+      const { page, limit, ...filtering } = paginate;
+      const totalData = await this.programs.countDocuments({
+        $and: [{ assignedEditor: id }, filtering],
+      });
       const programs = await this.programs
-        .find({ assignedEditor: id })
+        .find({ $and: [{ assignedEditor: id }, filtering] })
         .skip(PaginationHelper.paginateQuery(paginate))
         .limit(paginate.limit)
         .populate('department')
@@ -182,7 +186,7 @@ export class ProgramsService {
         .populate('assignedEditor', { password: 0 });
       return response
         .status(HttpStatus.OK)
-        .json({ success: true, programs: programs });
+        .json({ success: true, programs: programs, totalData:totalData });
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
