@@ -53,11 +53,10 @@ export class IssuesService {
         .populate({
           path: 'processedProgram',
           populate: [
-            { path: 'assignedCameraMen', select: '-userPin' }, // Exclude password field
+            { path: 'assignedCameraMen', select: '-userPin' }, 
             { path: 'equipments' },
-            { path: 'assignedEditor', select: '-userPin' }, // Exclude password field
+            { path: 'assignedEditor', select: '-userPin' }, 
             { path: 'producerDetails',select:'-userPin' },
-            // Add more fields to populate if needed
           ],
         });
       return response
