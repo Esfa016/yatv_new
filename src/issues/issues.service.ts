@@ -51,6 +51,7 @@ export class IssuesService {
       const { page, limit, ...filtering } = pagination;
       const data = await this.issues
         .find(filtering)
+        .sort({ createdAt: -1 })
         .skip(PaginationHelper.paginateQuery(pagination))
         .limit(pagination.limit)
         .populate('editor', { userPin: 0 })
@@ -82,6 +83,7 @@ export class IssuesService {
       const totalData = await this.issues.countDocuments({ editor: id });
       const data = await this.issues
         .find({ editor: id })
+        .sort({ createdAt: -1 })
         .populate('editor', { password: 0 })
         .populate('department')
         .populate({
@@ -111,6 +113,7 @@ export class IssuesService {
     try {
       const data = await this.issues
         .find({ processedProgram: id })
+        .sort({ createdAt: -1 })
         .populate('editor', { password: 0 })
         .populate('department')
         .populate({

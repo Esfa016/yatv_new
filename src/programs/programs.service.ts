@@ -48,6 +48,7 @@ export class ProgramsService {
       });
       const data = await this.programs
         .find({ department: userAccount.department })
+        .sort({createdAt:-1})
         .skip(PaginationHelper.paginateQuery(pagination))
         .limit(pagination.limit)
         .populate('department')
@@ -72,6 +73,7 @@ export class ProgramsService {
       const totalData = await this.programs.countDocuments(filtering);
       const data = await this.programs
         .find(filtering)
+        .sort({ createdAt: -1 })
         .skip(PaginationHelper.paginateQuery(pagination))
         .limit(pagination.limit)
         .populate('department')
@@ -175,6 +177,7 @@ export class ProgramsService {
       });
       const programs = await this.programs
         .find({ $and: [{ assignedEditor: id }, filtering] })
+        .sort({ createdAt: -1 })
         .skip(PaginationHelper.paginateQuery(paginate))
         .limit(paginate.limit)
         .populate('department')
