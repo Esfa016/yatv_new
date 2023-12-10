@@ -301,4 +301,24 @@ export class ProgramsService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError)
     }
   }
+
+  async search(response: Response, search: string) {
+    try { 
+      const regex = new RegExp(search, 'i');
+      const data = await this.programs
+        .find({ title: { $regex: regex } })
+        .populate('department')
+        .populate('approvedBy', { password: 0 })
+        .populate('producerDetails', { password: 0 })
+        .populate('equipments')
+        .populate('assignedCameraMen', { password: 0 })
+        .populate('producerDetails', { password: 0 })
+        .populate('assignedEditor', { password: 0 });
+      return response.status(HttpStatus.OK).json({success:true, programs:data})
+    }
+    catch (error) {
+      console.error(error)
+      throw new InternalServerErrorException(ErrorMessage.internalServerError)
+    }
+  }
 }

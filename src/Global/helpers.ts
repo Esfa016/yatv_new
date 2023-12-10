@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsNumber, Min } from 'class-validator';
+import { IsInt, IsOptional, IsNumber, Min, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 export class PaginationDto {
   @IsOptional()
@@ -15,6 +15,7 @@ export class PaginationDto {
 }
 import { IsMongoId, IsNotEmpty } from 'class-validator';
 import mongoose from 'mongoose';
+import { Trim } from 'class-sanitizer';
 export class MongooseIdDto {
   @IsNotEmpty()
   @IsMongoId()
@@ -26,4 +27,10 @@ export class PaginationHelper {
     const skip = (page - 1) * limit;
     return skip;
   }
+}
+export class SearchDTO{
+  @IsString()
+  @IsNotEmpty()
+   @Trim()
+  title: string;
 }

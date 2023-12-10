@@ -83,4 +83,16 @@ export class ProductsService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
+  async searchProduct(response: Response, title: string) {
+    try {
+      console.log(title)
+      const regex = new RegExp(title, 'i')
+      const data = await this.productModel.find({ title: { $regex: regex } })
+      return response.status(HttpStatus.OK).json({success:true, product:data})
+     }
+    catch (error) {
+      console.error(error)
+      throw new InternalServerErrorException(ErrorMessage.internalServerError)
+    }
+  }
 }

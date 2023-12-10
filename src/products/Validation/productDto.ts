@@ -23,3 +23,4 @@ export class ProductUpdateDTO {
   @IsString()
   description: string;
 }
+

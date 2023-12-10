@@ -1,6 +1,6 @@
 import { Controller , Patch,Post,Get,Put,Delete,Body,UseGuards,Query,Param, Req,Res} from '@nestjs/common';
 import { ProgramsService } from './programs.service';
-import { MongooseIdDto, PaginationDto } from 'src/Global/helpers';
+import { MongooseIdDto, PaginationDto, SearchDTO } from 'src/Global/helpers';
 import { UserAuthGuard } from 'src/auth/Jwt/authGuard';
 import { AssignEditorDTO, RequestCreateDTO } from './Validations/programDto';
 import { RbacGuard } from 'src/auth/Guards/roleGuard';
@@ -23,6 +23,10 @@ export class ProgramsController {
   ) {
     return this.programService.requestProgram(response, body, request.user);
   }
+  @Get('/search')
+  searchProgram(@Res() response, @Query() query: SearchDTO) {
+    return this.programService.search(response, query.title.replace(/\s/g, ''));
+  }
   @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.PRODUCTION_MANAGER]))
   @Post('/assign')
   assignEditorAndProducer(@Res() response, @Body() body: AssignEditorDTO) {
@@ -38,24 +42,28 @@ export class ProgramsController {
   rejectRequest(@Res() response, @Param() param: MongooseIdDto) {
     return this.programService.apporveRequest(response, param.id);
   }
-    @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.EDITOR]))
-    @Get('/assigned')
-    getAssigned(@Res() response, @Query() query: PaginationDto, @Req() request) {
-        return this.programService.getAssignedPrograms(response,request.user.id,query)
-    }
-  
+  @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.EDITOR]))
+  @Get('/assigned')
+  getAssigned(@Res() response, @Query() query: PaginationDto, @Req() request) {
+    return this.programService.getAssignedPrograms(
+      response,
+      request.user.id,
+      query,
+    );
+  }
+
   @Get('/:id')
   getOneProgram(@Res() response, @Param() id: MongooseIdDto) {
-    return this.programService.getOneById(response,id.id)
+    return this.programService.getOneById(response, id.id);
   }
   @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.EDITOR]))
   @Patch('/complete/:id')
   completeProgram(@Res() response, @Param() id: MongooseIdDto) {
-   return this.programService.completeProgram(response,id.id) 
+    return this.programService.completeProgram(response, id.id);
   }
   @UseGuards(UserAuthGuard)
   @Get('/departmentRequest')
   ownRequests(@Res() response, @Req() request, @Query() query: PaginationDto) {
-    return this.programService.getOwnRequest(response,query,request.user)
+    return this.programService.getOwnRequest(response, query, request.user);
   }
 }

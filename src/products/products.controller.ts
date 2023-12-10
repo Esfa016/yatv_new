@@ -1,10 +1,11 @@
 import { Controller,Post,Body,Get,Patch,UseGuards,Req,Res, Param, Put, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { ProductCreateDto, ProductUpdateDTO } from './Validation/productDto';
-import { MongooseIdDto, PaginationDto } from 'src/Global/helpers';
+import { MongooseIdDto, PaginationDto, SearchDTO } from 'src/Global/helpers';
 import { UserAuthGuard } from 'src/auth/Jwt/authGuard';
 import { RbacGuard } from 'src/auth/Guards/roleGuard';
 import { UserRoles } from 'src/auth/Types/roles';
+import { sanitize } from 'class-sanitizer';
 
 @Controller('products')
 export class ProductsController {
@@ -13,6 +14,10 @@ export class ProductsController {
   @Post()
   create(@Body() body: ProductCreateDto, @Res() response) {
     return this.productService.create(body, response);
+  }
+  @Get('/search')
+  search(@Res() response, @Query() query: SearchDTO) {
+   return this.productService.searchProduct(response,query.title.replace(/\s/g, ''))
   }
   @Get()
   get(@Res() response, @Query() queries: PaginationDto) {
@@ -31,4 +36,5 @@ export class ProductsController {
   ) {
     return this.productService.updateOne(id.id, response, product);
   }
+  
 }
