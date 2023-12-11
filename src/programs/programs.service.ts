@@ -52,12 +52,12 @@ export class ProgramsService {
         .skip(PaginationHelper.paginateQuery(pagination))
         .limit(pagination.limit)
         .populate('department')
-        .populate('approvedBy', { password: 0 })
-        .populate('producerDetails', { password: 0 })
+        .populate('approvedBy', { userPin: 0 })
+        .populate('producerDetails', { userPin: 0 })
         .populate('equipments')
-        .populate('assignedCameraMen', { password: 0 })
-        .populate('producerDetails', { password: 0 })
-        .populate('assignedEditor', { password: 0 });
+        .populate('assignedCameraMen', { userPin: 0 })
+        .populate('producerDetails', { userPin: 0 })
+        .populate('assignedEditor', { userPin: 0 });
       return response
         .status(HttpStatus.OK)
         .json({ success: true, request: data, totalData: totalData });
@@ -77,12 +77,12 @@ export class ProgramsService {
         .skip(PaginationHelper.paginateQuery(pagination))
         .limit(pagination.limit)
         .populate('department')
-        .populate('approvedBy', { password: 0 })
-        .populate('producerDetails', { password: 0 })
+        .populate('approvedBy', { userPin: 0 })
+        .populate('producerDetails', { userPin: 0 })
         .populate('equipments')
-        .populate('assignedCameraMen', { password: 0 })
-        .populate('producerDetails', { password: 0 })
-        .populate('assignedEditor', { password: 0 });
+        .populate('assignedCameraMen', { userPin: 0 })
+        .populate('producerDetails', { userPin: 0 })
+        .populate('assignedEditor', { userPin: 0 });
       return response
         .status(HttpStatus.OK)
         .json({ success: true, requests: data, totalData: totalData });
@@ -181,12 +181,12 @@ export class ProgramsService {
         .skip(PaginationHelper.paginateQuery(paginate))
         .limit(paginate.limit)
         .populate('department')
-        .populate('approvedBy', { password: 0 })
-        .populate('producerDetails', { password: 0 })
+        .populate('approvedBy', { userPin: 0 })
+        .populate('producerDetails', { userPin: 0 })
         .populate('equipments')
-        .populate('assignedCameraMen', { password: 0 })
-        .populate('producerDetails', { password: 0 })
-        .populate('assignedEditor', { password: 0 });
+        .populate('assignedCameraMen', { userPin: 0 })
+        .populate('producerDetails', { userPin: 0 })
+        .populate('assignedEditor', { userPin: 0 });
       return response
         .status(HttpStatus.OK)
         .json({ success: true, programs: programs, totalData:totalData });
@@ -204,12 +204,12 @@ export class ProgramsService {
       const program = await this.programs
         .findById(id)
         .populate('department')
-        .populate('approvedBy', { password: 0 })
-        .populate('producerDetails', { password: 0 })
+        .populate('approvedBy', { userPin: 0 })
+        .populate('producerDetails', { userPin: 0 })
         .populate('equipments')
-        .populate('assignedCameraMen', { password: 0 })
-        .populate('producerDetails', { password: 0 })
-        .populate('assignedEditor', { password: 0 });
+        .populate('assignedCameraMen', { userPin: 0 })
+        .populate('producerDetails', { userPin: 0 })
+        .populate('assignedEditor', { userPin: 0 });
       if (!program) throw new NotFoundException(ErrorMessage.productNotFound);
       return response
         .status(HttpStatus.OK)
@@ -308,12 +308,12 @@ export class ProgramsService {
       const data = await this.programs
         .find({ title: { $regex: regex } })
         .populate('department')
-        .populate('approvedBy', { password: 0 })
-        .populate('producerDetails', { password: 0 })
+        .populate('approvedBy', { userPin: 0 })
+        .populate('producerDetails', { userPin: 0 })
         .populate('equipments')
-        .populate('assignedCameraMen', { password: 0 })
-        .populate('producerDetails', { password: 0 })
-        .populate('assignedEditor', { password: 0 });
+        .populate('assignedCameraMen', { userPin: 0 })
+        .populate('producerDetails', { userPin: 0 })
+        .populate('assignedEditor', { userPin: 0 });
       return response.status(HttpStatus.OK).json({success:true, programs:data})
     }
     catch (error) {
