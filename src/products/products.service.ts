@@ -27,8 +27,9 @@ export class ProductsService {
 
   async getAll(@Res() response:Response, paginate:PaginationDto ) {
     try {
+      const totalData = await this.productModel.countDocuments()
         const data = await this.productModel.find().skip(PaginationHelper.paginateQuery(paginate)).limit(paginate.limit);
-      return response.status(HttpStatus.OK).json({ success: true, data: data });
+      return response.status(HttpStatus.OK).json({ success: true, data: data, totalData:totalData });
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);

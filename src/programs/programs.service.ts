@@ -292,7 +292,7 @@ export class ProgramsService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
-  async findOne(id): Promise<Programs>{
+  async findOne(id:mongoose.Schema.Types.ObjectId): Promise<Programs>{
     try { 
       return await this.programs.findById(id)
     }
