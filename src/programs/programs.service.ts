@@ -306,7 +306,7 @@ export class ProgramsService {
     try { 
       const regex = new RegExp(search, 'i');
       const data = await this.programs
-        .find({ title: { $regex: regex } })
+        .find({ $and: [{ title: { $regex: regex } }, {status:requestStatus.APPROVED}] })
         .populate('department')
         .populate('approvedBy', { userPin: 0 })
         .populate('producerDetails', { userPin: 0 })
