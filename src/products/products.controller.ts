@@ -17,7 +17,7 @@ export class ProductsController {
   }
   @Get('/search')
   search(@Res() response, @Query() query: SearchDTO) {
-   return this.productService.searchProduct(response,query.title.replace(/\s/g, ''))
+   return this.productService.searchProduct(response,query.title.replace(/\s/g, ''),query)
   }
   @Get()
   get(@Res() response, @Query() queries: PaginationDto) {

@@ -12,7 +12,7 @@ import { Response } from 'express';
 import { AssignEditorDTO, RequestCreateDTO } from './Validations/programDto';
 import { ErrorMessage, SuccessMessages } from 'src/Global/messages';
 import { UserAccount } from 'src/auth/Types/accountStatus';
-import { PaginationDto, PaginationHelper } from 'src/Global/helpers';
+import { PaginationDto, PaginationHelper, SearchDTO } from 'src/Global/helpers';
 
 @Injectable()
 export class ProgramsService {
@@ -302,11 +302,18 @@ export class ProgramsService {
     }
   }
 
-  async search(response: Response, search: string) {
+  async search(response: Response, search: string, paginate:SearchDTO) {
     try { 
       const regex = new RegExp(search, 'i');
+      const totalData = await this.programs.countDocuments({
+        $and: [
+          { title: { $regex: regex } },
+          { status: requestStatus.APPROVED },
+        ],
+      });
       const data = await this.programs
-        .find({ $and: [{ title: { $regex: regex } }, {status:requestStatus.APPROVED}] })
+        .find({ $and: [{ title: { $regex: regex } }, { status: requestStatus.APPROVED }] })
+        .skip(PaginationHelper.paginateQuery(paginate)).limit(paginate.limit)
         .populate('department')
         .populate('approvedBy', { userPin: 0 })
         .populate('producerDetails', { userPin: 0 })
@@ -314,7 +321,7 @@ export class ProgramsService {
         .populate('assignedCameraMen', { userPin: 0 })
         .populate('producerDetails', { userPin: 0 })
         .populate('assignedEditor', { userPin: 0 });
-      return response.status(HttpStatus.OK).json({success:true, programs:data})
+      return response.status(HttpStatus.OK).json({success:true, programs:data, totalData:totalData})
     }
     catch (error) {
       console.error(error)

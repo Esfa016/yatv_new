@@ -4,7 +4,7 @@ import mongoose, { Model } from 'mongoose';
 import { Product } from './Model/productModel';
 import { ProductCreateDto, ProductUpdateDTO } from './Validation/productDto';
 import { ErrorMessage } from 'src/Global/messages';
-import { PaginationDto, PaginationHelper } from 'src/Global/helpers';
+import { PaginationDto, PaginationHelper, SearchDTO } from 'src/Global/helpers';
 import { Response } from 'express';
 
 @Injectable()
@@ -84,12 +84,15 @@ export class ProductsService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
-  async searchProduct(response: Response, title: string) {
+  async searchProduct(response: Response, title: string, pagination:SearchDTO) {
     try {
       console.log(title)
       const regex = new RegExp(title, 'i')
-      const data = await this.productModel.find({ title: { $regex: regex } })
-      return response.status(HttpStatus.OK).json({success:true, product:data})
+      const totalData = await this.productModel.countDocuments({
+        title: { $regex: regex },
+      });
+      const data = await this.productModel.find({ title: { $regex: regex } }).skip(PaginationHelper.paginateQuery(pagination)).limit(pagination.limit)
+      return response.status(HttpStatus.OK).json({success:true, product:data, totalData:totalData})
      }
     catch (error) {
       console.error(error)

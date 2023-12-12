@@ -25,7 +25,7 @@ export class ProgramsController {
   }
   @Get('/search')
   searchProgram(@Res() response, @Query() query: SearchDTO) {
-    return this.programService.search(response, query.title.replace(/\s/g, ''));
+    return this.programService.search(response, query.title.replace(/\s/g, ''),query);
   }
   @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.PRODUCTION_MANAGER]))
   @Post('/assign')
