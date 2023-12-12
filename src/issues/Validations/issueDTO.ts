@@ -11,7 +11,7 @@ import mongoose from 'mongoose';
 export class CreateIssueDTO {
   @IsMongoId()
   @IsNotEmpty()
-  processedProgram: mongoose.Types.ObjectId;
+  processedProgram: mongoose.Schema.Types.ObjectId;
   @IsDate()
   @Type(() => Date)
   beginDate: Date;
