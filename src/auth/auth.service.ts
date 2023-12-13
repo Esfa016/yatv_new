@@ -77,7 +77,7 @@ export class AuthService {
           role: userFound.role,
           department: userFound.department,
         },
-        { secret: process.env.JWT_USER, expiresIn: '2m' },
+        { secret: process.env.JWT_USER, expiresIn: '1d' },
       );
       return response.status(HttpStatus.OK).json({
         success: true,
