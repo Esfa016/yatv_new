@@ -20,7 +20,7 @@ enum jobType {
   STUDIO = 'studio',
   FIELD = 'field',
   PROGRAM = 'program',
-  DOCUMENTARY = 'doucmentary',
+  DOCUMENTARY = 'documentary',
   ASSOCIATIVE = 'associative',
   ADVERTIZEMENT = 'advertizment',
   SPORT = 'sport',
