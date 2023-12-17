@@ -40,7 +40,7 @@ export class ProgramsController {
 
   @Patch('/reject/:id')
   rejectRequest(@Res() response, @Param() param: MongooseIdDto) {
-    return this.programService.apporveRequest(response, param.id);
+    return this.programService.rejectRequest(response, param.id);
   }
   @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.EDITOR]))
   @Get('/assigned')
