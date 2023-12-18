@@ -348,7 +348,7 @@ export class ProgramsService {
         .populate('assignedEditor', { userPin: 0 })
         .skip(PaginationHelper.paginateQuery(pagination))
         .limit(pagination.limit);
-      return response.status(HttpStatus.OK).json({success:true, programs:data, totalData:totalData})
+      return response.status(HttpStatus.OK).json({success:true, requests:data, totalData:totalData})
     } catch (error) {
       console.error(error) 
       throw new InternalServerErrorException(ErrorMessage.internalServerError)
