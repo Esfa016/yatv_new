@@ -42,7 +42,6 @@
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.29.4",
     "mongoose": "^7.5.1",
-    "mongoose-express-sanitizer": "^2.0.1",
     "nestjs-uuid": "^0.0.6",
     "otp-generator-ts": "^1.0.0",
     "passport": "^0.6.0",
