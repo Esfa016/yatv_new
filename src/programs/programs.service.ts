@@ -48,7 +48,7 @@ export class ProgramsService {
       });
       const data = await this.programs
         .find({ department: userAccount.department })
-        .sort({createdAt:-1})
+        .sort({ createdAt: -1 })
         .skip(PaginationHelper.paginateQuery(pagination))
         .limit(pagination.limit)
         .populate('department')
@@ -189,7 +189,7 @@ export class ProgramsService {
         .populate('assignedEditor', { userPin: 0 });
       return response
         .status(HttpStatus.OK)
-        .json({ success: true, programs: programs, totalData:totalData });
+        .json({ success: true, programs: programs, totalData: totalData });
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
@@ -230,13 +230,11 @@ export class ProgramsService {
       });
       if (!programFound)
         throw new NotFoundException(ErrorMessage.productNotFound);
-      return response
-        .status(HttpStatus.OK)
-        .json({
-          success: true,
-          message: SuccessMessages.updateSuccessful,
-          program: programFound,
-        });
+      return response.status(HttpStatus.OK).json({
+        success: true,
+        message: SuccessMessages.updateSuccessful,
+        program: programFound,
+      });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
       console.error(error);
@@ -292,28 +290,33 @@ export class ProgramsService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
-  async findOne(id:mongoose.Schema.Types.ObjectId): Promise<Programs>{
-    try { 
-      return await this.programs.findById(id)
-    }
-    catch (error) {
-      console.error(error)
-      throw new InternalServerErrorException(ErrorMessage.internalServerError)
+  async findOne(id: mongoose.Schema.Types.ObjectId): Promise<Programs> {
+    try {
+      return await this.programs.findById(id);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
-  async search(response: Response, search: string, paginate:SearchDTO) {
-    try { 
+  async search(response: Response, search: string, paginate: SearchDTO) {
+    try {
       const regex = new RegExp(search, 'i');
       const totalData = await this.programs.countDocuments({
         $and: [
           { title: { $regex: regex } },
-          { status: requestStatus.APPROVED },
+          { status: { $ne: requestStatus.PENDING } },
         ],
       });
       const data = await this.programs
-        .find({ $and: [{ title: { $regex: regex } }, { status: requestStatus.APPROVED }] })
-        .skip(PaginationHelper.paginateQuery(paginate)).limit(paginate.limit)
+        .find({
+          $and: [
+            { title: { $regex: regex } },
+            { status: requestStatus.APPROVED },
+          ],
+        })
+        .skip(PaginationHelper.paginateQuery(paginate))
+        .limit(paginate.limit)
         .populate('department')
         .populate('approvedBy', { userPin: 0 })
         .populate('producerDetails', { userPin: 0 })
@@ -321,10 +324,33 @@ export class ProgramsService {
         .populate('assignedCameraMen', { userPin: 0 })
         .populate('producerDetails', { userPin: 0 })
         .populate('assignedEditor', { userPin: 0 });
-      return response.status(HttpStatus.OK).json({success:true, programs:data, totalData:totalData})
+      return response
+        .status(HttpStatus.OK)
+        .json({ success: true, programs: data, totalData: totalData });
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
-    catch (error) {
-      console.error(error)
+  }
+
+  async getNonPending(response: Response, pagination: PaginationDto) {
+    try {
+      const totalData = await this.programs.countDocuments({
+        status: { $ne: requestStatus.PENDING },
+      });
+      const data = await this.programs
+        .find({ status: { $ne: requestStatus.PENDING } }).populate('department')
+        .populate('approvedBy', { userPin: 0 })
+        .populate('producerDetails', { userPin: 0 })
+        .populate('equipments')
+        .populate('assignedCameraMen', { userPin: 0 })
+        .populate('producerDetails', { userPin: 0 })
+        .populate('assignedEditor', { userPin: 0 })
+        .skip(PaginationHelper.paginateQuery(pagination))
+        .limit(pagination.limit);
+      return response.status(HttpStatus.OK).json({success:true, programs:data, totalData:totalData})
+    } catch (error) {
+      console.error(error) 
       throw new InternalServerErrorException(ErrorMessage.internalServerError)
     }
   }

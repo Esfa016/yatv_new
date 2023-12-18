@@ -25,7 +25,11 @@ export class ProgramsController {
   }
   @Get('/search')
   searchProgram(@Res() response, @Query() query: SearchDTO) {
-    return this.programService.search(response, query.title.replace(/\s/g, ''),query);
+    return this.programService.search(
+      response,
+      query.title.replace(/\s/g, ''),
+      query,
+    );
   }
   @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.PRODUCTION_MANAGER]))
   @Post('/assign')
@@ -51,7 +55,10 @@ export class ProgramsController {
       query,
     );
   }
-
+  @Get('/non-pending')
+  getNonPending(@Res() response, @Query() query: PaginationDto) {
+    return this.programService.getNonPending(response, query);
+  }
   @Get('/:id')
   getOneProgram(@Res() response, @Param() id: MongooseIdDto) {
     return this.programService.getOneById(response, id.id);
@@ -66,4 +73,5 @@ export class ProgramsController {
   ownRequests(@Res() response, @Req() request, @Query() query: PaginationDto) {
     return this.programService.getOwnRequest(response, query, request.user);
   }
+  // @UseGuards(UserAuthGuard, new RbacGuard([UserRoles.SUPER_ADMIN]))
 }
