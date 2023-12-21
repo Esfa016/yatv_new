@@ -305,14 +305,16 @@ export class ProgramsService {
       const totalData = await this.programs.countDocuments({
         $and: [
           { title: { $regex: regex } },
-          { status: { $ne: requestStatus.PENDING } },
+          {
+            status: { $ne: requestStatus.PENDING }
+          },
         ],
       });
       const data = await this.programs
         .find({
           $and: [
             { title: { $regex: regex } },
-            { status: requestStatus.APPROVED },
+            {  status: { $ne: requestStatus.PENDING } },
           ],
         })
         .skip(PaginationHelper.paginateQuery(paginate))
