@@ -332,7 +332,6 @@ export class ProgramsService {
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
-//
   async getNonPending(response: Response, pagination: PaginationDto) {
     try {
       const totalData = await this.programs.countDocuments({

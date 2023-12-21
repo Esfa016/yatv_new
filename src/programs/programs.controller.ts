@@ -55,7 +55,7 @@ export class ProgramsController {
       query,
     );
   }
-  @UseGuards(UserAuthGuard,new RbacGuard([UserRoles.SUPER_ADMIN]))
+  @UseGuards(UserAuthGuard,new RbacGuard([UserRoles.SUPER_ADMIN, UserRoles.PRODUCTION_MANAGER]))
   @Get('/non-pending')
   getNonPending(@Res() response, @Query() query: PaginationDto) {
     return this.programService.getNonPending(response, query);
