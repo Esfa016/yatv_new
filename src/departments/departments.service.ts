@@ -2,6 +2,7 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   Res,
 } from '@nestjs/common';
@@ -14,11 +15,12 @@ import { ErrorMessage, SuccessMessages } from 'src/Global/messages';
 import { PaginationDto, PaginationHelper } from 'src/Global/helpers';
 @Injectable()
 export class DepartmentsService {
+  private readonly logger = new Logger(DepartmentsService.name)
   constructor(
     @InjectModel(Departments.name) private departments: Model<Departments>,
   ) {}
 
-  async createDepartment(@Res() response: Response, body: CreateDepatmentDTO) {
+  async createDepartment(response:Response, body: CreateDepatmentDTO) {
     try {
       const data = await this.departments.create(body);
       return response.status(HttpStatus.CREATED).json({
@@ -27,12 +29,12 @@ export class DepartmentsService {
         department: data,
       });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
   async getAllDepartments(
-    @Res() response: Response,
+    response:Response,
     pagination: PaginationDto,
   ) {
     try {
@@ -44,7 +46,7 @@ export class DepartmentsService {
         .status(HttpStatus.OK)
         .json({ success: true, departments: data });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
@@ -67,7 +69,7 @@ export class DepartmentsService {
         });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
@@ -88,7 +90,7 @@ export class DepartmentsService {
         });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }

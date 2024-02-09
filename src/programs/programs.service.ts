@@ -2,6 +2,7 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   Res,
 } from '@nestjs/common';
@@ -16,9 +17,10 @@ import { PaginationDto, PaginationHelper, SearchDTO } from 'src/Global/helpers';
 
 @Injectable()
 export class ProgramsService {
+  private readonly logger = new Logger(ProgramsService.name)
   constructor(@InjectModel(Programs.name) private programs: Model<Programs>) {}
   async requestProgram(
-    @Res() response: Response,
+    response: Response,
     body: RequestCreateDTO,
     user: UserAccount,
   ) {
@@ -33,7 +35,7 @@ export class ProgramsService {
         request: data,
       });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
@@ -62,12 +64,12 @@ export class ProgramsService {
         .status(HttpStatus.OK)
         .json({ success: true, request: data, totalData: totalData });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
-  async getRequests(@Res() response: Response, pagination: PaginationDto) {
+  async getRequests(response: Response, pagination: PaginationDto) {
     try {
       const { page, limit, ...filtering } = pagination;
       const totalData = await this.programs.countDocuments(filtering);
@@ -87,13 +89,13 @@ export class ProgramsService {
         .status(HttpStatus.OK)
         .json({ success: true, requests: data, totalData: totalData });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
   async apporveRequest(
-    @Res() response: Response,
+    response: Response,
     id: mongoose.Schema.Types.ObjectId,
   ) {
     try {
@@ -109,13 +111,13 @@ export class ProgramsService {
       });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
   async rejectRequest(
-    @Res() response: Response,
+    response: Response,
     id: mongoose.Schema.Types.ObjectId,
   ) {
     try {
@@ -131,13 +133,13 @@ export class ProgramsService {
       });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
   async assignEditorAndProducer(
-    @Res() response: Response,
+    response: Response,
     body: AssignEditorDTO,
   ) {
     try {
@@ -160,13 +162,13 @@ export class ProgramsService {
       });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
   async getAssignedPrograms(
-    @Res() response: Response,
+    response: Response,
     id: mongoose.Schema.Types.ObjectId,
     paginate: PaginationDto,
   ) {
@@ -191,13 +193,13 @@ export class ProgramsService {
         .status(HttpStatus.OK)
         .json({ success: true, programs: programs, totalData: totalData });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
   async getOneById(
-    @Res() response: Response,
+    response: Response,
     id: mongoose.Schema.Types.ObjectId,
   ) {
     try {
@@ -216,12 +218,12 @@ export class ProgramsService {
         .json({ success: true, program: program });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
   async completeProgram(
-    @Res() response: Response,
+    response: Response,
     id: mongoose.Schema.Types.ObjectId,
   ) {
     try {
@@ -237,7 +239,7 @@ export class ProgramsService {
       });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
@@ -286,7 +288,7 @@ export class ProgramsService {
         totalPrograms: totalData || 0,
       };
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
@@ -294,7 +296,7 @@ export class ProgramsService {
     try {
       return await this.programs.findById(id);
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
@@ -330,7 +332,7 @@ export class ProgramsService {
         .status(HttpStatus.OK)
         .json({ success: true, programs: data, totalData: totalData });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
@@ -351,7 +353,7 @@ export class ProgramsService {
         .limit(pagination.limit);
       return response.status(HttpStatus.OK).json({success:true, requests:data, totalData:totalData})
     } catch (error) {
-      console.error(error) 
+      this.logger.error(error) 
       throw new InternalServerErrorException(ErrorMessage.internalServerError)
     }
   }

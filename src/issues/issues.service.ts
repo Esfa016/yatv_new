@@ -2,6 +2,7 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   Res,
 } from '@nestjs/common';
@@ -16,12 +17,13 @@ import { ProgramsService } from 'src/programs/programs.service';
 
 @Injectable()
 export class IssuesService {
+  private readonly logger = new Logger(IssuesService.name)
   constructor(
     @InjectModel(Issue.name) private issues: Model<Issue>,
     private programService: ProgramsService,
   ) {}
   async createIssue(
-    @Res() response: Response,
+    response:Response,
     body: CreateIssueDTO,
     editor: mongoose.Schema.Types.ObjectId,
   ) {
@@ -40,12 +42,12 @@ export class IssuesService {
         issue: data,
       });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
-  async getAllIssues(@Res() response: Response, pagination: PaginationDto) {
+  async getAllIssues(response:Response, pagination: PaginationDto) {
     try {
       const totalData = await this.issues.countDocuments();
       const { page, limit, ...filtering } = pagination;
@@ -69,13 +71,13 @@ export class IssuesService {
         .status(HttpStatus.OK)
         .json({ success: true, issues: data, totalData: totalData });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
   async getOwnIssues(
-    @Res() response: Response,
+    response:Response,
     id: mongoose.Schema.Types.ObjectId,
     paginate: PaginationDto,
   ) {
@@ -101,13 +103,13 @@ export class IssuesService {
         .status(HttpStatus.OK)
         .json({ success: true, issues: data, totalData: totalData });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
   async getProgramIssue(
-    @Res() response: Response,
+    response:Response,
     id: mongoose.Schema.Types.ObjectId,
   ) {
     try {
@@ -129,7 +131,7 @@ export class IssuesService {
         .status(HttpStatus.OK)
         .json({ success: true, issues: data });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
@@ -155,7 +157,7 @@ export class IssuesService {
         .json({ success: true, issue: data });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }

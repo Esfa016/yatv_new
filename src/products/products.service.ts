@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, InternalServerErrorException, NotFoundException, Res } from '@nestjs/common';
+import { HttpStatus, Injectable, InternalServerErrorException, Logger, NotFoundException, Res } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Product } from './Model/productModel';
@@ -9,10 +9,11 @@ import { Response } from 'express';
 
 @Injectable()
 export class ProductsService {
+  private readonly logger = new Logger(ProductsService.name)
   constructor(
     @InjectModel(Product.name) private productModel: Model<Product>,
   ) {}
-  async create(product: ProductCreateDto, @Res() response:Response) {
+  async create(product: ProductCreateDto, response:Response) {
     try {
       const data = await this.productModel.create(product);
       return response.status(HttpStatus.CREATED).json({
@@ -25,7 +26,7 @@ export class ProductsService {
     }
   }
 
-  async getAll(@Res() response:Response, paginate:PaginationDto ) {
+  async getAll(response:Response, paginate:PaginationDto ) {
     try {
       const totalData = await this.productModel.countDocuments({
         quantity: { $gt: 0 },
@@ -33,12 +34,12 @@ export class ProductsService {
         const data = await this.productModel.find({quantity:{$gt:0}}).skip(PaginationHelper.paginateQuery(paginate)).limit(paginate.limit);
       return response.status(HttpStatus.OK).json({ success: true, data: data, totalData:totalData });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
-  async getOne(id: mongoose.Schema.Types.ObjectId, @Res() response:Response) {
+  async getOne(id: mongoose.Schema.Types.ObjectId, response:Response) {
     try {
       const data = await this.productModel.findById(id);
       if (!data) throw new NotFoundException(ErrorMessage.productNotFound);
@@ -55,7 +56,7 @@ export class ProductsService {
 
   async updateOne(
     id: mongoose.Schema.Types.ObjectId,
-    @Res() response:Response,
+    response:Response,
     product: ProductUpdateDTO,
   ) {
     try {
@@ -73,7 +74,7 @@ export class ProductsService {
     }
   }
 
-  async deleteOne(id: mongoose.Types.ObjectId, @Res() response:Response): Promise<Response> {
+  async deleteOne(id: mongoose.Types.ObjectId, response:Response): Promise<Response> {
     try {
       const deleted = await this.productModel.findOneAndDelete({ _id: id });
       if (!deleted) throw new NotFoundException(ErrorMessage.productNotFound);
@@ -82,7 +83,7 @@ export class ProductsService {
         data: deleted,
       });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
@@ -97,7 +98,7 @@ export class ProductsService {
       return response.status(HttpStatus.OK).json({success:true, product:data, totalData:totalData})
      }
     catch (error) {
-      console.error(error)
+      this.logger.error(error)
       throw new InternalServerErrorException(ErrorMessage.internalServerError)
     }
   }

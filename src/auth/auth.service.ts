@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   Res,
   UnauthorizedException,
@@ -27,6 +28,7 @@ import { AccountStatus } from './Types/accountStatus';
 import { UserRoles } from './Types/roles';
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name)
   constructor(
     @InjectModel(Users.name) private users: Model<Users>,
     private jwt: JwtService,
@@ -38,7 +40,7 @@ export class AuthService {
     } catch (error) {}
   }
 
-  async createUser(@Res() response: Response, body: CreateUserDto) {
+  async createUser(response:Response, body: CreateUserDto) {
     try {
       const userFound = await this.users.findOne({
         phoneNumber: body.phoneNumber,
@@ -56,12 +58,12 @@ export class AuthService {
       });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
-  async loginUser(@Res() response: Response, body: LoginUserDto) {
+  async loginUser(response:Response, body: LoginUserDto) {
     try {
       const userFound = await this.users.findOne({ username: body.username });
       if (!userFound)
@@ -86,12 +88,12 @@ export class AuthService {
       });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
-  async getAllUsers(@Res() response: Response, paginationDto: PaginationDto) {
+  async getAllUsers(response:Response, paginationDto: PaginationDto) {
     try {
       const totalData = await this.users.countDocuments({
         $and: [
@@ -111,13 +113,13 @@ export class AuthService {
         .status(HttpStatus.OK)
         .json({ success: true, users: users, totalData: totalData });
     } catch (error) {
-      console.error(error); 
+      this.logger.error(error); 
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
   async changePassword(
-    @Res() response: Response,
+    response:Response,
     body: ChangePasswordDto,
     id: mongoose.Schema.Types.ObjectId,
   ) {
@@ -131,24 +133,24 @@ export class AuthService {
         message: SuccessMessages.updateSuccessful,
       });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
 
-  async findOne(@Res() response: Response, id: mongoose.Schema.Types.ObjectId) {
+  async findOne(response:Response, id: mongoose.Schema.Types.ObjectId) {
     try {
       const data = await this.users.findById(id, { userPin: 0 }).populate('department');
       if (!data) throw new NotFoundException(ErrorMessage.userNotFound);
       return response.status(HttpStatus.OK).json({ success: true, user: data });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
   async disableUser(
-    @Res() response: Response,
+    response:Response,
     id: mongoose.Schema.Types.ObjectId,
   ) {
     try {
@@ -165,12 +167,12 @@ export class AuthService {
         .json({ success: true, message: SuccessMessages.updateSuccessful });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
   async enableUser(
-    @Res() response: Response,
+    response:Response,
     id: mongoose.Schema.Types.ObjectId,
   ) {
     try {
@@ -183,12 +185,12 @@ export class AuthService {
         .json({ success: true, message: SuccessMessages.updateSuccessful });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
   async archiveUser(
-    @Res() response: Response,
+    response:Response,
     id: mongoose.Schema.Types.ObjectId,
   ) {
     try {
@@ -202,11 +204,11 @@ export class AuthService {
         .json({ success: true, message: SuccessMessages.updateSuccessful });
     } catch (error) {
       if (!(error instanceof InternalServerErrorException)) throw error;
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
-  async getFilterd(@Res() response: Response, query: PaginationDto) {
+  async getFilterd(response:Response, query: PaginationDto) {
     try {
       const { page, limit, ...filtering } = query;
       const totalData = await this.users.countDocuments(filtering);
@@ -219,7 +221,7 @@ export class AuthService {
         .status(HttpStatus.OK)
         .json({ success: true, users: data, totalData: totalData });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
@@ -243,12 +245,12 @@ export class AuthService {
         totalUsers: totalUsers,
       };
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
   async updateUser(
-    @Res() response: Response,
+    response:Response,
     id: mongoose.Schema.Types.ObjectId,
     userData: UpdateUserDto,
   ) {
@@ -264,7 +266,7 @@ export class AuthService {
           user: userData,
         });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerErrorException(ErrorMessage.internalServerError);
     }
   }
